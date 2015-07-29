@@ -365,8 +365,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _axialAberration: 1
-  _lateralAberration: 1
-  _sampleDistance: 3
+  _lateralAberration: .319999993
+  _sampleDistance: 4
   _shader: {fileID: 4800000, guid: 4e3f6504698a346cb971f9ab5286fca9, type: 3}
 --- !u!1 &1930045775
 GameObject:

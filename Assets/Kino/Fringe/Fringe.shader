@@ -73,12 +73,31 @@ Shader "Hidden/Kino/Fringe"
 
     half4 frag(v2f_img i) : SV_Target
     {
+        float k = 0.0;
+        float kcube = 0.01;
+        float2 uv = i.uv;
+        float2 uv2 = (uv - 0.5) * float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
+        float r2 = dot(uv2, uv2);
+        
+        float f1 = 1.0 + r2 * (k + kcube * sqrt(r2));
+        float f2 = 1.0 + r2 * (-k - kcube * sqrt(r2));
+
+        float2 uva = (uv - 0.5) * f1 + 0.5;
+        float2 uvb = (uv - 0.5) * f2 + 0.5;
+        
         half4 src = tex2D(_MainTex, i.uv);
-        half3 blur = poisson_filter(i.uv);
+        half4 src2 = tex2D(_MainTex, uva);
+        half4 src3 = tex2D(_MainTex, uvb);
+
+        src.r = src3.r;
+        src.b = src2.b;
+
+//        half4 src = tex2D(_MainTex, i.uv);
+        half3 blur = poisson_filter(uvb);
 
         half ldiff = luminance(abs(src.rbg - blur));
         src.rb = lerp(src.rb, blur.rb, saturate(ldiff * 10 * _Axial));
-
+        
         return src;
     }
 
