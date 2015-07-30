@@ -34,9 +34,8 @@ Shader "Hidden/Kino/Fringe"
     sampler2D _MainTex;
     float4 _MainTex_TexelSize;
 
+    float _Shift;
     float _Axial;
-    float _Lateral;
-    float _SampleDist;
 
     // Poisson disk sample points
     static const uint SAMPLE_NUM = 8;
@@ -59,7 +58,7 @@ Shader "Hidden/Kino/Fringe"
         for (uint i = 0; i < SAMPLE_NUM; i++)
         {
             float2 disp = POISSON_SAMPLES[i];
-            disp *= _MainTex_TexelSize.xy * _SampleDist;
+            disp *= _Shift * 0.01;
             acc += tex2D(_MainTex, uv + disp).rgb;
         }
         return acc / SAMPLE_NUM;
@@ -71,33 +70,24 @@ Shader "Hidden/Kino/Fringe"
         return dot(rgb, half3(0.2126, 0.7152, 0.0722));
     }
 
+    // CA filter
     half4 frag(v2f_img i) : SV_Target
     {
-        float k = 0.0;
-        float kcube = 0.01;
-        float2 uv = i.uv;
-        float2 uv2 = (uv - 0.5) * float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
-        float r2 = dot(uv2, uv2);
-        
-        float f1 = 1.0 + r2 * (k + kcube * sqrt(r2));
-        float f2 = 1.0 + r2 * (-k - kcube * sqrt(r2));
+        float2 spc = (i.uv - 0.5) * float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
+        float r2 = dot(spc, spc);
 
-        float2 uva = (uv - 0.5) * f1 + 0.5;
-        float2 uvb = (uv - 0.5) * f2 + 0.5;
-        
+        float f_r = 1.0 + r2 * _Shift * -0.02;
+        float f_b = 1.0 + r2 * _Shift * +0.02;
+
         half4 src = tex2D(_MainTex, i.uv);
-        half4 src2 = tex2D(_MainTex, uva);
-        half4 src3 = tex2D(_MainTex, uvb);
+        src.r = tex2D(_MainTex, (i.uv - 0.5) * f_r + 0.5).r;
+        src.b = tex2D(_MainTex, (i.uv - 0.5) * f_b + 0.5).b;
 
-        src.r = src3.r;
-        src.b = src2.b;
-
-//        half4 src = tex2D(_MainTex, i.uv);
-        half3 blur = poisson_filter(uvb);
+        half3 blur = poisson_filter(i.uv);
 
         half ldiff = luminance(abs(src.rbg - blur));
-        src.rb = lerp(src.rb, blur.rb, saturate(ldiff * 10 * _Axial));
-        
+        src.rb = lerp(src.rb, blur.rb, pow(saturate(ldiff * 10 * _Axial), 4));
+
         return src;
     }
 

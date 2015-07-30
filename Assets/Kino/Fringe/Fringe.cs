@@ -31,26 +31,23 @@ namespace Kino
     {
         #region Public Properties
 
-        // Axial aberration
+        // Shift amount
         [SerializeField, Range(0, 1)]
-        float _axialAberration = 1;
+        float _shiftAmount = 1;
 
-        public float axialAberration {
-            get { return _axialAberration; }
-            set { _axialAberration = value; }
+        public float shiftAmount {
+            get { return _shiftAmount; }
+            set { _shiftAmount = value; }
         }
 
-        // Lateral aberration
+        // Purple fringe
         [SerializeField, Range(0, 1)]
-        float _lateralAberration = 1;
+        float _purpleFringe = 1;
 
-        public float lateralAberration {
-            get { return _lateralAberration; }
-            set { _lateralAberration = value; }
+        public float purpleFringe {
+            get { return _purpleFringe; }
+            set { _purpleFringe = value; }
         }
-
-        [SerializeField, Range(0, 4)]
-        float _sampleDistance = 4;
 
         #endregion
 
@@ -72,9 +69,8 @@ namespace Kino
                 _material.hideFlags = HideFlags.DontSave;
             }
 
-            _material.SetFloat("_Axial", _axialAberration);
-            _material.SetFloat("_Lateral", _lateralAberration);
-            _material.SetFloat("_SampleDist", _sampleDistance);
+            _material.SetFloat("_Shift", _shiftAmount);
+            _material.SetFloat("_Axial", _purpleFringe);
 
             Graphics.Blit(source, destination, _material, 0);
         }
