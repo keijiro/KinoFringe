@@ -34,8 +34,10 @@ Shader "Hidden/Kino/Fringe"
     sampler2D _MainTex;
     float4 _MainTex_TexelSize;
 
-    float _Shift;
-    float _Axial;
+    float4 _CameraAspect; // (h/w, w/h, 1, 0)
+    float _LateralShift;
+    float _AxialStrength;
+    float _AxialShift;
 
     // Poisson disk sample points
     static const uint SAMPLE_NUM = 8;
@@ -58,7 +60,7 @@ Shader "Hidden/Kino/Fringe"
         for (uint i = 0; i < SAMPLE_NUM; i++)
         {
             float2 disp = POISSON_SAMPLES[i];
-            disp *= _Shift * 0.01;
+            disp *= _CameraAspect.yz * _AxialShift * 0.02;
             acc += tex2D(_MainTex, uv + disp).rgb;
         }
         return acc / SAMPLE_NUM;
@@ -73,11 +75,11 @@ Shader "Hidden/Kino/Fringe"
     // CA filter
     half4 frag(v2f_img i) : SV_Target
     {
-        float2 spc = (i.uv - 0.5) * float2(_MainTex_TexelSize.y / _MainTex_TexelSize.x, 1);
+        float2 spc = (i.uv - 0.5) * _CameraAspect.xz;
         float r2 = dot(spc, spc);
 
-        float f_r = 1.0 + r2 * _Shift * -0.02;
-        float f_b = 1.0 + r2 * _Shift * +0.02;
+        float f_r = 1.0 + r2 * _LateralShift * -0.02;
+        float f_b = 1.0 + r2 * _LateralShift * +0.02;
 
         half4 src = tex2D(_MainTex, i.uv);
         src.r = tex2D(_MainTex, (i.uv - 0.5) * f_r + 0.5).r;
@@ -85,8 +87,8 @@ Shader "Hidden/Kino/Fringe"
 
         half3 blur = poisson_filter(i.uv);
 
-        half ldiff = luminance(abs(src.rbg - blur));
-        src.rb = lerp(src.rb, blur.rb, pow(saturate(ldiff * 10 * _Axial), 4));
+        half ldiff = luminance(blur) - luminance(src.rbg);
+        src.rb = max(src.rb, blur.rb * ldiff * _AxialStrength);
 
         return src;
     }
