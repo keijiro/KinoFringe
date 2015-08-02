@@ -42,7 +42,7 @@ namespace Kino
 
         // Axial CA strength
         [SerializeField, Range(0, 1)]
-        float _axialStrength = 0.5f;
+        float _axialStrength = 0.8f;
 
         public float axialStrength {
             get { return _axialStrength; }
