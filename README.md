@@ -9,7 +9,7 @@ KinoFringe is an image effect for Unity, which simulates [chromatic aberration]
 
 It supports two types of chromatic aberration:
 
-- Lateral CA - shifts colors and occurs only in the edge region of the screen.
+- Lateral CA - distorts color planes in the edge region of the screen.
 - Axial CA - introduces purple finges around strong highlights.
 
 [wikipedia]: https://en.wikipedia.org/wiki/Chromatic_aberration
@@ -17,7 +17,7 @@ It supports two types of chromatic aberration:
 System Requirements
 -------------------
 
-Unity 5.1 or later versions.
+Unity 5.0 or later versions.
 
 License
 -------
