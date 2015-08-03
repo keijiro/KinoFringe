@@ -5,7 +5,7 @@ KinoFringe is an image effect for Unity, which simulates [chromatic aberration]
 [wikipedia] of lenses.
 
 ![screenshot](https://41.media.tumblr.com/0316b348ca0d5c3963dbb122097d8405/tumblr_nsb3qjsrU81qio469o1_400.png)
-![screenshot](https://41.media.tumblr.com/a83db26d3910df081ccd2f5ddb53d080/tumblr_nsgly6J5AL1qio469o1_400.png)
+![screenshot](https://40.media.tumblr.com/eca7388707a24fa6ab47fcb8110019e6/tumblr_nsidaqXBr41qio469o1_400.png)
 
 It supports two types of chromatic aberration:
 
