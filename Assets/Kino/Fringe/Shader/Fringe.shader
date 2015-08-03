@@ -112,7 +112,7 @@ Shader "Hidden/Kino/Fringe"
 
         #if AXIAL_SAMPLE_LOW || AXIAL_SAMPLE_HIGH
         half3 blur = poisson_filter(i.uv);
-        half ldiff = luminance(blur) - luminance(src.rbg);
+        half ldiff = luminance(blur) - luminance(src.rgb);
         src.rb = max(src.rb, blur.rb * ldiff * _AxialStrength);
         #endif
 
