@@ -31,15 +31,18 @@ namespace Kino
         SerializedProperty _lateralShift;
         SerializedProperty _axialStrength;
         SerializedProperty _axialShift;
+        SerializedProperty _axialQuality;
 
         static GUIContent _textShift = new GUIContent("Shift");
         static GUIContent _textStrength = new GUIContent("Strength");
+        static GUIContent _textQuality = new GUIContent("Quality");
 
         void OnEnable()
         {
             _lateralShift = serializedObject.FindProperty("_lateralShift");
             _axialStrength = serializedObject.FindProperty("_axialStrength");
             _axialShift = serializedObject.FindProperty("_axialShift");
+            _axialQuality = serializedObject.FindProperty("_axialQuality");
         }
 
         public override void OnInspectorGUI()
@@ -52,6 +55,7 @@ namespace Kino
             EditorGUILayout.LabelField("Axial CA (purple fringing)", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_axialStrength, _textStrength);
             EditorGUILayout.PropertyField(_axialShift, _textShift);
+            EditorGUILayout.PropertyField(_axialQuality, _textQuality);
 
             serializedObject.ApplyModifiedProperties();
         }

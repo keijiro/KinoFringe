@@ -29,6 +29,8 @@ Shader "Hidden/Kino/Fringe"
 
     CGINCLUDE
 
+    #pragma multi_compile _ AXIAL_SAMPLE_LOW AXIAL_SAMPLE_HIGH
+
     #include "UnityCG.cginc"
 
     sampler2D _MainTex;
@@ -40,19 +42,42 @@ Shader "Hidden/Kino/Fringe"
     float _AxialShift;
 
     // Poisson disk sample points
+    #if AXIAL_SAMPLE_LOW
     static const uint SAMPLE_NUM = 8;
     static const float2 POISSON_SAMPLES[SAMPLE_NUM] =
     {
-        float2(0.506456158113, 0.216884156934) * 2 - 1,
-        float2(0.989818956980, 0.747194792852) * 2 - 1,
-        float2(0.000402764999, 0.271360572518) * 2 - 1,
-        float2(0.548290703131, 0.786973666349) * 2 - 1,
-        float2(0.706589330496, 0.491162115587) * 2 - 1,
-        float2(0.283019706155, 0.534466520374) * 2 - 1,
-        float2(0.261566808856, 0.937111516353) * 2 - 1,
-        float2(0.804170282245, 0.032975327061) * 2 - 1
+        float2( 0.373838022357f, 0.662882019975f ),
+        float2( -0.335774814282f, -0.940070127794f ),
+        float2( -0.9115721822f, 0.324130702404f ),
+        float2( 0.837294074715f, -0.504677167232f ),
+        float2( -0.0500874221246f, -0.0917990757772f ),
+        float2( -0.358644570242f, 0.906381100284f ),
+        float2( 0.961200130218f, 0.219135111748f ),
+        float2( -0.896666615007f, -0.440304757692f )
     };
-    
+    #else
+    static const uint SAMPLE_NUM = 16;
+    static const float2 POISSON_SAMPLES[SAMPLE_NUM] =
+    {
+        float2( 0.0984258332809f, 0.918808284462f ),
+        float2( 0.00259138629413f, -0.999838959623f ),
+        float2( -0.987959729023f, -0.00429660140761f ),
+        float2( 0.981234239267f, -0.140666219895f ),
+        float2( -0.0212157973013f, -0.0443286928994f ),
+        float2( -0.652058534734f, 0.695078086985f ),
+        float2( -0.68090417832f, -0.681862769398f ),
+        float2( 0.779643686501f, 0.603399060386f ),
+        float2( 0.67941165083f, -0.731372789969f ),
+        float2( 0.468821477499f, -0.251621416756f ),
+        float2( 0.278991228738f, 0.39302189329f ),
+        float2( -0.191188273806f, -0.527976638433f ),
+        float2( -0.464789669525f, 0.216311272754f ),
+        float2( -0.559833960421f, -0.256176089172f ),
+        float2( 0.65988403582f, 0.170056284903f ),
+        float2( -0.170289189543f, 0.551561042407f )
+    };
+    #endif
+
     // Poisson filter
     half3 poisson_filter(float2 uv)
     {
@@ -85,10 +110,11 @@ Shader "Hidden/Kino/Fringe"
         src.r = tex2D(_MainTex, (i.uv - 0.5) * f_r + 0.5).r;
         src.b = tex2D(_MainTex, (i.uv - 0.5) * f_b + 0.5).b;
 
+        #if AXIAL_SAMPLE_LOW || AXIAL_SAMPLE_HIGH
         half3 blur = poisson_filter(i.uv);
-
         half ldiff = luminance(blur) - luminance(src.rbg);
         src.rb = max(src.rb, blur.rb * ldiff * _AxialStrength);
+        #endif
 
         return src;
     }

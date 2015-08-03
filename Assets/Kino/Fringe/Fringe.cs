@@ -58,6 +58,17 @@ namespace Kino
             set { _axialShift = value; }
         }
 
+        // Quality level for axial CA
+        public enum QualityLevel { Low, High }
+
+        [SerializeField]
+        QualityLevel _axialQuality = QualityLevel.Low;
+
+        public QualityLevel axialQuality {
+            get { return _axialQuality; }
+            set { _axialQuality = value; }
+        }
+
         #endregion
 
         #region Private Properties
@@ -85,6 +96,22 @@ namespace Kino
             _material.SetFloat("_LateralShift", _lateralShift);
             _material.SetFloat("_AxialStrength", _axialStrength);
             _material.SetFloat("_AxialShift", _axialShift);
+
+            if (_axialStrength == 0)
+            {
+                _material.DisableKeyword("AXIAL_SAMPLE_LOW");
+                _material.DisableKeyword("AXIAL_SAMPLE_HIGH");
+            }
+            else if (_axialQuality == QualityLevel.Low)
+            {
+                _material.EnableKeyword("AXIAL_SAMPLE_LOW");
+                _material.DisableKeyword("AXIAL_SAMPLE_HIGH");
+            }
+            else
+            {
+                _material.DisableKeyword("AXIAL_SAMPLE_LOW");
+                _material.EnableKeyword("AXIAL_SAMPLE_HIGH");
+            }
 
             Graphics.Blit(source, destination, _material, 0);
         }
