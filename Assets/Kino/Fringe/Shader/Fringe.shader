@@ -125,6 +125,7 @@ Shader "Hidden/Kino/Fringe"
     {
         Pass
         {
+            ZTest Always Cull Off ZWrite Off
             CGPROGRAM
             #pragma vertex vert_img
             #pragma fragment frag
